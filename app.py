@@ -3,13 +3,14 @@ import datetime
 import io
 
 import dash
+import plotly.graph_objs as go
 from dash.dependencies import Input, Output, State
-import dash_core_components as dcc
-import dash_html_components as html
-import dash_table
+from dash import dcc
+from dash import html
+import dash_bootstrap_components as dbc
+from dash import dash_table
 
 import pandas as pd
-
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
