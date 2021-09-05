@@ -3,11 +3,11 @@ import datetime
 import io
 
 import dash
-import plotly.graph_objs as go
+#import plotly.graph_objs as go
 from dash.dependencies import Input, Output, State
 from dash import dcc
 from dash import html
-import dash_bootstrap_components as dbc
+#import dash_bootstrap_components as dbc
 from dash import dash_table
 
 import pandas as pd
@@ -61,18 +61,18 @@ def parse_contents(contents, filename, date):
         html.H6(datetime.datetime.fromtimestamp(date)),
 
         dash_table.DataTable(
-            data=df.to_dict('records'),
+            data=df.head().to_dict('records'),
             columns=[{'name': i, 'id': i} for i in df.columns]
         ),
 
         html.Hr(),  # horizontal line
 
         # For debugging, display the raw contents provided by the web browser
-        html.Div('Raw Content'),
-        html.Pre(contents[0:200] + '...', style={
-            'whiteSpace': 'pre-wrap',
-            'wordBreak': 'break-all'
-        })
+        #html.Div('Raw Content'),
+        #html.Pre(contents[0:200] + '...', style={
+        #    'whiteSpace': 'pre-wrap',
+        #    'wordBreak': 'break-all'
+        #})
     ])
 
 
@@ -83,8 +83,7 @@ def parse_contents(contents, filename, date):
 def update_output(list_of_contents, list_of_names, list_of_dates):
     if list_of_contents is not None:
         children = [
-            parse_contents(c, n, d) for c, n, d in
-            zip(list_of_contents, list_of_names, list_of_dates)]
+            parse_contents(list_of_contents, list_of_names, list_of_dates)]
         return children
 
 
