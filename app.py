@@ -38,7 +38,7 @@ app.layout = html.Div([
 ])
 
 
-def parse_contents(contents, filename, date):
+def parse_contents(contents, filename):
     content_type, content_string = contents.split(',')
 
     decoded = base64.b64decode(content_string)
@@ -47,6 +47,11 @@ def parse_contents(contents, filename, date):
             # Assume that the user uploaded a CSV file
             df = pd.read_csv(
                 io.StringIO(decoded.decode('utf-8')))
+            
+            if any(df.columns.str.contains('^Unnamed')):
+                df = pd.read_csv(
+                    io.StringIO(decoded.decode('utf-8')), index_col=0)
+
         elif 'xls' in filename:
             # Assume that the user uploaded an excel file
             df = pd.read_excel(io.BytesIO(decoded))
@@ -58,7 +63,7 @@ def parse_contents(contents, filename, date):
 
     return html.Div([
         html.H5(filename),
-        html.H6(datetime.datetime.fromtimestamp(date)),
+        #html.H6(datetime.datetime.fromtimestamp(date)),
 
         dash_table.DataTable(
             data=df.head().to_dict('records'),
@@ -78,12 +83,11 @@ def parse_contents(contents, filename, date):
 
 @app.callback(Output('output-data-upload', 'children'),
               Input('upload-data', 'contents'),
-              State('upload-data', 'filename'),
-              State('upload-data', 'last_modified'))
-def update_output(list_of_contents, list_of_names, list_of_dates):
+              State('upload-data', 'filename'))
+def update_output(list_of_contents, list_of_names):
     if list_of_contents is not None:
         children = [
-            parse_contents(list_of_contents, list_of_names, list_of_dates)]
+            parse_contents(list_of_contents, list_of_names)]
         return children
 
 
