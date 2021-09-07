@@ -67,13 +67,14 @@ def parse_contents(contents, filename):
         html.H5(filename), 
 
         dash_table.DataTable(
-            data=df.head().to_dict('records'),
-            columns=[{'name': i, 'id': i} for i in df.columns], id='dataset'
+            data=df.to_dict('records'),
+            columns=[{'name': i, 'id': i} for i in df.columns], id='dataset',
+            fixed_rows={'headers': True, 'data': 10}
         ),
 
         html.Hr(),  # horizontal line
         dcc.Dropdown(
-        id='dropdown-x-axis',
+        id='x_axis',
         options=[
             {'label': i, 'value': i} for i in df.columns
         ],
@@ -81,7 +82,7 @@ def parse_contents(contents, filename):
         ),
         html.Br(), html.Br(),
         dcc.Dropdown(
-        id='dropdown-y-axis',
+        id='y_axis',
         options=[
             {'label': i, 'value': i} for i in df.columns
         ],
@@ -90,7 +91,7 @@ def parse_contents(contents, filename):
 
         html.Br(), html.Br(),
         dcc.Dropdown(
-        id='dropdown-plot-type',
+        id='plot_type',
         options=[
             {'label': 'Scatter Plot', 'value': 'scatter'},
             {'label': 'Line Plot', 'value': 'line'},
@@ -117,18 +118,20 @@ def update_output(list_of_contents, list_of_names):
         return children
 
 @app.callback(Output('output-plot', 'children'),
-                Input('dropdown-x-axis', 'value'), Input('dropdown-y-axis', 'value'), 
-                Input('dropdown-plot-type', 'value'), Input('dataset', 'value'))
-def return_plot(x_axis_name, y_axis_name, plot_type, df):
+                Input('x_axis', 'value'), Input('y_axis', 'value'), 
+                Input('plot_type', 'value'), Input('dataset', 'data'))
+def return_plot(x_axis, y_axis, plot_type, dataset):
+    df = pd.DataFrame(dataset)
+    
     if plot_type == 'scatter':
-        
-        return dcc.Graph(
+
+        return html.Div([dcc.Graph(
                 id='scatter-plot',
                 figure={
                     'data': [
                         go.Scatter(
-                            x=df[x_axis_name],
-                            y=df[y_axis_name],
+                            x=df[x_axis],
+                            y=df[y_axis],
                             mode='markers',
                             marker={
                                 'size': 10,
@@ -138,24 +141,24 @@ def return_plot(x_axis_name, y_axis_name, plot_type, df):
                         )
                     ],
                     'layout': go.Layout(
-                        xaxis={'title': x_axis_name},
-                        yaxis={'title': y_axis_name},
+                        xaxis={'title': x_axis},
+                        yaxis={'title': y_axis},
                         margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
                         legend={'x': 0, 'y': 1},
                         hovermode='closest'
                     )
                 }
-            )
+            )])
     
     elif plot_type == 'line':
         
-        return dcc.Graph(
+        return html.Div([dcc.Graph(
                 id='line-plot',
                 figure={
                     'data': [
                         go.Scatter(
-                            x=df[x_axis_name],
-                            y=df[y_axis_name],
+                            x=df[x_axis],
+                            y=df[y_axis],
                             mode='lines',
                             line={
                                 'shape': 'spline',
@@ -164,62 +167,62 @@ def return_plot(x_axis_name, y_axis_name, plot_type, df):
                         )
                     ],
                     'layout': go.Layout(
-                        xaxis={'title': x_axis_name},
-                        yaxis={'title': y_axis_name},
+                        xaxis={'title': x_axis},
+                        yaxis={'title': y_axis},
                         margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
                         legend={'x': 0, 'y': 1},
                         hovermode='closest'
                     )
                 }
-            )
+            )])
 
     elif plot_type == 'bar':
         
-        return dcc.Graph(
+        return html.Div([dcc.Graph(
                 id='bar-plot',
                 figure={
                     'data': [
                         go.Bar(
-                            x=df[x_axis_name],
-                            y=df[y_axis_name],
+                            x=df[x_axis],
+                            y=df[y_axis],
                             marker={
                                 'color': '#7FDBFF'
                             }
                         )
                     ],
                     'layout': go.Layout(
-                        xaxis={'title': x_axis_name},
-                        yaxis={'title': y_axis_name},
+                        xaxis={'title': x_axis},
+                        yaxis={'title': y_axis},
                         margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
                         legend={'x': 0, 'y': 1},
                         hovermode='closest'
                     )
                 }
-            )
+            )])
 
     elif plot_type == 'sunburst':
         
-        return dcc.Graph(
+        return html.Div([dcc.Graph(
                 id='sunburst-plot',
                 figure={
                     'data': [
                         go.Sunburst(
-                            labels=df[x_axis_name],
-                            values=df[y_axis_name],
+                            labels=df[x_axis],
+                            values=df[y_axis],
                             marker={
                                 'color': '#7FDBFF'
                             }
                         )
                     ],
                     'layout': go.Layout(
-                        xaxis={'title': x_axis_name},
-                        yaxis={'title': y_axis_name},
+                        xaxis={'title': x_axis},
+                        yaxis={'title': y_axis},
                         margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
                         legend={'x': 0, 'y': 1},
                         hovermode='closest'
                     )
                 }
-            )
+            )])
 
 
 if __name__ == '__main__':
