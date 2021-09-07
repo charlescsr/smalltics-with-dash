@@ -6,7 +6,6 @@ import plotly.graph_objs as go
 from dash.dependencies import Input, Output, State
 from dash import dcc
 from dash import html
-#import dash_bootstrap_components as dbc
 from dash import dash_table
 
 import pandas as pd
@@ -14,10 +13,14 @@ import pandas as pd
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+server = app.server
 
 app.config['suppress_callback_exceptions'] = True
 
 app.layout = html.Div([
+    html.H1(children='Smalltics Dashboard', style={'text-align': 'center'}), html.Br(),
+    html.H3(children='Upload your dataset and select the axes and plot and voila', style={'text-align': 'center'}),
+
     dcc.Upload(
         id='upload-data',
         children=html.Div([
