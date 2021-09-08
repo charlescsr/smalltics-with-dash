@@ -70,10 +70,10 @@ def parse_contents(contents, filename):
         html.H5(filename), 
 
         dash_table.DataTable(
-            data=df.to_dict('records'),
+            data=df.head().to_dict('records'),
             columns=[{'name': i, 'id': i} for i in df.columns], id='dataset',
-            fixed_rows={'headers': True, 'data': 10}
         ),
+        html.Div(id='secret-df', hidden=True, children=df.to_json(orient='split')),
 
         html.Hr(),  # horizontal line
         dcc.Dropdown(
@@ -122,9 +122,9 @@ def update_output(list_of_contents, list_of_names):
 
 @app.callback(Output('output-plot', 'children'),
                 Input('x_axis', 'value'), Input('y_axis', 'value'), 
-                Input('plot_type', 'value'), Input('dataset', 'data'))
+                Input('plot_type', 'value'), Input('secret-df', 'children'))
 def return_plot(x_axis, y_axis, plot_type, dataset):
-    df = pd.DataFrame(dataset)
+    df = pd.read_json(dataset, orient='split')
     
     if plot_type == 'scatter':
 
