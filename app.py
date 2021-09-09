@@ -28,11 +28,11 @@ app.layout = html.Div([
             html.A('Select File')
         ]),
         style={
-            'width': '100%',
+            'width': '99%',
             'height': '60px',
             'lineHeight': '60px',
             'borderWidth': '1px',
-            'borderStyle': 'dashed',
+            'borderStyle': 'solid',
             'borderRadius': '5px',
             'textAlign': 'center',
             'margin': '10px'
@@ -99,7 +99,9 @@ def parse_contents(contents, filename):
             {'label': 'Scatter Plot', 'value': 'scatter'},
             {'label': 'Line Plot', 'value': 'line'},
             {'label': 'Bar Plot', 'value': 'bar'},
-            {'label': 'Sunburst Plot', 'value': 'sunburst'}
+            {'label': 'Sunburst Plot', 'value': 'sunburst'},
+            {'label': 'Treemap Plot', 'value': 'treemap'},
+            {'label': 'Pie Chart', 'value': 'pie'}
         ],
         clearable=False,
         )
@@ -227,6 +229,53 @@ def return_plot(x_axis, y_axis, plot_type, dataset):
                 }
             )])
 
+    elif plot_type == 'treemap':
+        
+        return html.Div([dcc.Graph(
+                id='treemap-plot',
+                figure={
+                    'data': [
+                        go.Treemap(
+                            labels=df[x_axis],
+                            values=df[y_axis],
+                            marker={
+                                'color': '#7FDBFF'
+                            }
+                        )
+                    ],
+                    'layout': go.Layout(
+                        xaxis={'title': x_axis},
+                        yaxis={'title': y_axis},
+                        margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
+                        legend={'x': 0, 'y': 1},
+                        hovermode='closest'
+                    )
+                }
+            )])
+
+    elif plot_type == 'pie':
+
+        return html.Div([dcc.Graph(
+                id='pie-plot',
+                figure={
+                    'data': [
+                        go.Pie(
+                            labels=df[x_axis],
+                            values=df[y_axis],
+                            marker={
+                                'colors': ['#7FDBFF', '#0074D9', '#FF4136', '#2ECC40', '#FF851B', '#B10DC9', '#FFDC00', '#001f3f', '#39CCCC', '#01FF70', '#85144b', '#F012BE', '#3D9970', '#111111', '#AAAAAA']
+                            }
+                        )
+                    ],
+                    'layout': go.Layout(
+                        xaxis={'title': x_axis},
+                        yaxis={'title': y_axis},
+                        margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
+                        legend={'x': 0, 'y': 1},
+                        hovermode='closest'
+                    )
+                }
+            )])
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server()
